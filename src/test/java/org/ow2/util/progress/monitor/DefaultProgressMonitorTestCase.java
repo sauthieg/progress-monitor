@@ -60,6 +60,12 @@ public class DefaultProgressMonitorTestCase {
 		
 	}
 	
+	@Test(expectedExceptions = IllegalStateException.class)
+	public void testException() {
+		monitor.setConsumableWorkUnits(1);
+		monitor.setConsumableWorkUnits(1);
+	}
+	
 	@Test
 	public void testListenerOnWorkConsumed() {
 		monitor.setConsumableWorkUnits(1);
