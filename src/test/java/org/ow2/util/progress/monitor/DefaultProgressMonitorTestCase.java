@@ -25,7 +25,7 @@ import org.testng.annotations.Test;
 public class DefaultProgressMonitorTestCase {
 
 	private final class EmptyProgressListener implements IProgressListener {
-		public boolean done;
+		public boolean done, cancel;
 		public double consumed;
 
 		public void onWorkUnitsConsumed(ProgressEvent event) {
@@ -37,8 +37,7 @@ public class DefaultProgressMonitorTestCase {
 		}
 
 		public void onCancel(ProgressEvent event) {
-			// TODO Auto-generated method stub
-			
+			cancel = true;
 		}
 	}
 
@@ -57,6 +56,31 @@ public class DefaultProgressMonitorTestCase {
 		monitor.consume(1);
 		
 		Assert.assertEquals(listener.done, true);
+		
+	}
+	
+	@Test
+	public void testMonitorFinished() {
+		monitor.setConsumableWorkUnits(10);
+		EmptyProgressListener listener = new EmptyProgressListener();
+		monitor.addProgressListener(listener);
+		monitor.consume(1);
+		monitor.finish("End up abruptly");
+		
+		Assert.assertEquals(listener.done, true);
+		
+	}
+	
+	@Test
+	public void testMonitorCancelled() {
+		monitor.setConsumableWorkUnits(10);
+		EmptyProgressListener listener = new EmptyProgressListener();
+		monitor.addProgressListener(listener);
+		monitor.consume(1);
+		monitor.cancel("Cancel progress monitor");
+		
+		Assert.assertEquals(listener.cancel, true);
+		Assert.assertEquals(listener.done, false);
 		
 	}
 	
