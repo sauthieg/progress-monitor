@@ -95,14 +95,23 @@ public class DefaultProgressMonitor implements IProgressMonitor, IProgressListen
      * @return a child progress monitor
      */
     public IProgressMonitor createSubProgressMonitor(int tickCount) {
-        String name = "Child-" + idCounter++;
-        IProgressMonitor child = new DefaultProgressMonitor(name);
+        IProgressMonitor child = createChildProgressMonitor();
         child.addProgressListener(this);
-        childsCounters.put(name, new SubCounter(tickCount));
+        childsCounters.put(child.getId(), new SubCounter(tickCount));
         return child;
     }
 
     /**
+     * Create a child monitor.
+     * This method can be sub-classed to override the monitor's name and type.
+     * @return a child monitor
+     */
+    protected IProgressMonitor createChildProgressMonitor() {
+    	String name = "Child-" + idCounter++;
+		return new DefaultProgressMonitor(name);
+	}
+
+	/**
      * Work for the given number of ticks.
      *
      * @param tickCount work units count.
