@@ -145,13 +145,37 @@ public class DefaultProgressMonitorTestCase {
 		
 		IProgressMonitor sub = monitor.createSubProgressMonitor(3);
 		sub.setConsumableWorkUnits(2);
-		sub.consume(2);
+		// Perform half of the work
+		sub.consume(1);
+		// For the global listener, it's the half of the child size 
+		double relative = 3.0 / 2.0;
+		Assert.assertEquals(listener.consumed, 2d + relative);
+		// Finish the child
+		sub.consume(1);
 		Assert.assertEquals(listener.consumed, 5d);
 		
 		monitor.consume(5);
 		Assert.assertEquals(listener.consumed, 10d);
 		
 		Assert.assertTrue(listener.done);
+		
+	}
+	
+	@Test
+	public void testSubMonitorCancelation() {
+		monitor.setConsumableWorkUnits(10);
+		EmptyProgressListener listener = new EmptyProgressListener();
+		monitor.addProgressListener(listener);
+		
+		monitor.consume(2);
+		Assert.assertEquals(listener.consumed, 2d);
+		
+		IProgressMonitor sub = monitor.createSubProgressMonitor(3);
+		sub.setConsumableWorkUnits(2);
+		sub.consume(1);
+		sub.cancel("Cancelation");
+
+		Assert.assertTrue(listener.cancel);
 		
 	}
 	
