@@ -241,6 +241,8 @@ public class DefaultProgressMonitor implements IProgressMonitor, IProgressListen
         SubCounter counter = this.childsCounters.get(id);
         double units = event.getConsumedUnits();
         counter.setConsumedUnits(units);
+        // Update child total because at child creation,
+        // we don't know the amount of work of child itself
         counter.setChildTotal(event.getSource().getConsumableWorkUnits());
 
         fireWorkUnitsConsumed("Child Progress monitor has new values.");
@@ -250,7 +252,8 @@ public class DefaultProgressMonitor implements IProgressMonitor, IProgressListen
     }
 
     public void onCancel(ProgressEvent event) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    	// Propagate the cancelation
+        fireWorkCanceled(event.getSource().getId() + " : " + event.getMessage());
     }
 
     private class SubCounter {
